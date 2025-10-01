@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: 2025-present OpenRefactory, Inc.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+google-genai
+langchain-openai
+beautifulsoup4
+openai
+python-dotenv
+python-json-logger
