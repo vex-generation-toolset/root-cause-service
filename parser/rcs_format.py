@@ -123,8 +123,8 @@ def extract_root_cause_functions_from_string(content: str, repo: str = "") -> st
                 parsed = json.loads(json_block)
                 for entry in parsed:
                     for func in entry.get("root_cause_functions", []):
-                        if qname := func.get("Qualified Name"):
-                            methods.append(qname)
+                        if canonical_names := func.get("canonical_name"):
+                            methods.extend(canonical_names)
                         pkg = pkg or func.get("package", "")
                         ver = ver or func.get("version", "")
             except json.JSONDecodeError:

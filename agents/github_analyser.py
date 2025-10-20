@@ -19,7 +19,9 @@ from loggers import (
 from parser import (
     extract_clean_json
 )
-
+from utils import (
+    CodeChangeAnalyzer
+)
 logging = get_logger(__name__)
 
 class GitHubAnalyzer(BaseAnalyser):
@@ -169,6 +171,8 @@ class GitHubAnalyzer(BaseAnalyser):
                 and isinstance(consensus_json["root_cause_functions"], list)
                 and len(consensus_json["root_cause_functions"]) > 0
             ):
+                self.calculate_canonical_name(consensus_json,filename,commit_url)
+                logging.info(f"final consensus_json with canonical names: {consensus_json}")
                 self.log_consensus_entry(
                     filename, commit_url, consensus_json, cve_id, source
                 )
@@ -178,7 +182,12 @@ class GitHubAnalyzer(BaseAnalyser):
             logging.error(f"Error processing {filename}: {e}")
 
         return None
-
+    def calculate_canonical_name(self, consensus_json,filename,commit_url):
+        for item in consensus_json["root_cause_functions"]:
+            code_change_analyzer = CodeChangeAnalyzer()
+            cname = code_change_analyzer.get_line_numbers_then_canonical_name(commit_url,filename,consensus_json["root_cause_functions"][0]["function_name"])
+            item["canonical_name"] = cname
+    
     def analyze_commit_for_cve(
             self,
             url: str,
