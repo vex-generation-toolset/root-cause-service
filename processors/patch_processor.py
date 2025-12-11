@@ -111,31 +111,27 @@ class PatchProcessor:
                 api_base = f"https://api.github.com/repos/{owner}/{repo}"
 
                 ref_resp = requests.get(
-                    f"{api_base}/git/ref/tags/{tag}",
+                    f"{api_base}/tags",
                     headers={
                         "Authorization": f"Bearer {os.getenv('GITHUB_TOKEN', '')}"
                     },
                     timeout=10,
                 )
                 ref_resp.raise_for_status()
-                ref_data = ref_resp.json()
-                obj_type = ref_data["object"]["type"]
-                obj_sha = ref_data["object"]["sha"]
+                tags_data = ref_resp.json()
 
-                if obj_type == "tag":
-                    tag_obj = requests.get(
-                        f"{api_base}/git/tags/{obj_sha}",
-                        headers={
-                            "Authorization": f"Bearer {os.getenv('GITHUB_TOKEN', '')}"
-                        },
-                        timeout=10,
-                    ).json()
-                    commit_sha = tag_obj["object"]["sha"]
-                elif obj_type == "commit":
-                    commit_sha = obj_sha
-                else:
+                matching_tag = None
+                for t in tags_data:
+                    # TODO: rigorously handle minor differences between tag formatting
+                    if t["name"] == tag or t["name"] == "v"+tag:
+                        matching_tag = t
+                        break
+
+                if not matching_tag:
+                    logging.warning(f"Tag '{tag}' not found in repository")
                     continue
 
+                commit_sha = matching_tag["commit"]["sha"]
                 commit_url = f"https://github.com/{owner}/{repo}/commit/{commit_sha}"
 
                 all_urls.append(commit_url)
