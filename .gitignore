@@ -6,6 +6,12 @@ __pycache__/
 # C extensions
 *.so
 
+# input output files
+input.json
+output.json
+output.txt
+
+
 # Distribution / packaging
 .Python
 build/

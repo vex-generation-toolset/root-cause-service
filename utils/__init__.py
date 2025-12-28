@@ -5,6 +5,9 @@
 from .argument_parser import (
     parse_arguments
 )
+from .code_change_analyzer import (
+    CodeChangeAnalyzer
+)
 from .consensus_store import (
     ConsensusStore
 )
@@ -23,9 +26,12 @@ from .websearch_client import (
     OpenAISearchClient
 )
 
-_all__ = [
+__all__ = [
     # argument_parser.py
     'parse_arguments',
+
+    # code_change_analyzer.py
+    "CodeChangeAnalyzer",
 
     # consensus_store.py
     'ConsensusStore',
